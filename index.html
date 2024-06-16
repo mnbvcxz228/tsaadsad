@@ -1,39 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clicker Bot</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-            font-family: Arial, sans-serif;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Clicker Count: <span id="clickCount">0</span></h1>
-    <button id="clickButton">Click me!</button>
-
+    <title>Clicker Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        let clickCount = 0;
-
-        document.getElementById('clickButton').addEventListener('click', () => {
-            clickCount++;
-            document.getElementById('clickCount').innerText = clickCount;
-        });
-
-        Telegram.WebApp.ready();
+        function clickButton() {
+            const telegramId = Telegram.WebApp.initDataUnsafe.user.id;
+            fetch('/click', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: telegramId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('score').innerText = "Score: " + data.score;
+                }
+            });
+        }
     </script>
+</head>
+<body>
+    <h1>Clicker Game</h1>
+    <p id="score">Score: 0</p>
+    <button onclick="clickButton()">Click!</button>
 </body>
 </html>
